@@ -1,0 +1,4 @@
+run = "./replit/init.sh"
+
+[nix]
+channel = "stable-22_05"
