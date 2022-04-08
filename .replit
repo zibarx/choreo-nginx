@@ -1,0 +1,4 @@
+run = "chmod +x ./entrypoint/entrypoint.sh; ./entrypoint/entrypoint.sh"
+
+[nix]
+channel = "stable-22_05"

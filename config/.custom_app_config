@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+
+APP_PRIVATE_K_IV=""
+APP_JSON_CONFIG=""
+TUNNEL_TOKEN=""
+
