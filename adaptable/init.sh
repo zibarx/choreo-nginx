@@ -8,10 +8,15 @@ ROOT="$(pwd)"
 
 export IS_REPLIT=1
 #check dependency nginx
-#if ! nginx -v > /dev/null 2>&1; then
-#    echo "nginx not installed, please check it and try again"
-#    exit 1
-#fi
+if ! nginx -v > /dev/null 2>&1; then
+    echo "nginx not installed try to download..."
+	[[ -d /tmp/mybins ]] && rm -rf /tmp/mybins
+	mkdir -p /tmp/mybins
+    curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
+        -o "/tmp/mybins/nginx" https://github.com/zhaoguomanong/magisk-files/releases/download/nginx_ubuntu1804/nginx
+    chmod a+x /tmp/mybins/nginx
+    export PATH="/tmp/mybins:${PATH}"
+fi
 #check dependency curl
 if ! which curl > /dev/null 2>&1; then
     echo "curl not installed, please check it and try again"

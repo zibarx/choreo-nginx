@@ -9,11 +9,6 @@ var fs = require("fs");
 var path = require("path");
 
 
-app.get("/", (req, res) => {
-  res.send("Welcome to my website...");
-});
-
-
 app.get("/status", (req, res) => {
   let cmdStr = "ps -ef";
   exec(cmdStr, function (err, stdout, stderr) {
@@ -40,9 +35,9 @@ app.get("/start", (req, res) => {
 
 
 app.use(
-  "/.cachefiles/73cd83b8-bc53-4796-a631-9839b34f4b39/",
+  "/",
   createProxyMiddleware({
-    target: "http://127.0.0.1:8081/",
+    target: "http://127.0.0.1:8080/",
     changeOrigin: true,
     ws: true,
     onProxyReq: function onProxyReq(proxyReq, req, res) {},
