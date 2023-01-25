@@ -12,9 +12,8 @@ basic_watchdog_time='1'
 watchdog_name="goorm_app_watchdog"
 daily_restart_cron="goorm_app_daily_restart"
 app_name="apache2"
-export LOCAL_BINS="/tmp/mybins"
-[[ ! -d "${LOCAL_BINS}" ]] && mkdir -p "${LOCAL_BINS}"
-export PATH="${LOCAL_BINS}:${PATH}"
+. ../config/configs.sh
+export PATH="${APP_BIN_HOME}:${PATH}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
 
 

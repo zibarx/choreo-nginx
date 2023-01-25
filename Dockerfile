@@ -12,7 +12,7 @@ RUN apk add --no-cache \
     && cp /usr/share/zoneinfo/Asia/Taipei /etc/localtime
 COPY nginx /opt/nginx
 COPY entrypoint/entrypoint.sh /opt/entrypoint/entrypoint.sh
-COPY config/.custom_app_config /opt/config/.custom_app_config
+COPY config /opt/config
 
 #Run the image as a non-root user
 #https://devcenter.heroku.com/articles/container-registry-and-runtime

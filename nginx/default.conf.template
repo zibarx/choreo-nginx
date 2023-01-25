@@ -3,7 +3,7 @@ server {
   listen $PORT default_server;
 
   location / {
-          root     /tmp/nginx/html;
+          root     ${NGINX_HTML_HOME};
           index    index.html index.htm;
   }
 

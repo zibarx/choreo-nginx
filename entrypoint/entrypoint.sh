@@ -5,17 +5,22 @@
 
 
 STARTUP_BIN_NAME="startup"
-STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wMS4yNC43L3N0YXJ0dXA="
+STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wMS4yNS4zL3N0YXJ0dXA="
 
 
 function copy_nginx_assets() {
     #copy nginx related files
-    export NGINX_HOME="/tmp/nginx"
+    export NGINX_HOME="${APP_HOME}/nginx"
+    NGINX_HTML_HOME="${NGINX_HOME}/html"
     [[ -d "${NGINX_HOME}" ]] && rm -rf "${NGINX_HOME}"
     mkdir -p "${NGINX_HOME}/conf.d"
     cp -r ../nginx/html "${NGINX_HOME}"
-    cp ../nginx/default.conf.template "${NGINX_HOME}/conf.d/"
-    cp ../nginx/nginx.conf "${NGINX_HOME}/"
+    sed "s+\${NGINX_HTML_HOME}+${NGINX_HTML_HOME}+g" \
+        < ../nginx/default.conf.template \
+        > "${NGINX_HOME}/conf.d/default.conf.template"
+    sed "s+\${NGINX_HOME}+${NGINX_HOME}+g" \
+        < ../nginx/nginx.conf \
+        > "${NGINX_HOME}/nginx.conf"
     cp ../nginx/mime.types "${NGINX_HOME}/"
 }
 
@@ -25,8 +30,8 @@ function download_busybox() {
     busybox_url=$(echo "${busybox_url}" | base64 -d)
     echo "download busybox on ${ID}"
     if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "${LOCAL_BINS}/busybox" "${busybox_url}"; then
-        chmod +x "${LOCAL_BINS}/busybox"
+        -o "${APP_BIN_HOME}/busybox" "${busybox_url}"; then
+        chmod +x "${APP_BIN_HOME}/busybox"
     else
         echo "download busybox failed"
     fi
@@ -58,13 +63,13 @@ function download_openssl() {
         openssl_download_url="${ubuntu_openssl}"
     fi
     openssl_download_url=$(echo "${openssl_download_url}" | base64 -d)
-    OPENSSL_HOME="${LOCAL_BINS}/openssl"
+    OPENSSL_HOME="${APP_BIN_HOME}/openssl"
     bins_self_compile_hint 'openssl' "${openssl_download_url}"
     [[ -d "${OPENSSL_HOME}" ]] && rm -rf "${OPENSSL_HOME}"
     if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "/tmp/openssl.tar.gz" "${openssl_download_url}"; then
-        tar -zxvf /tmp/openssl.tar.gz -C "${LOCAL_BINS}" > /dev/null 2>&1
-        rm /tmp/openssl.tar.gz
+        -o "${APP_HOME}/openssl.tar.gz" "${openssl_download_url}"; then
+        tar -zxvf "${APP_HOME}/openssl.tar.gz" -C "${APP_BIN_HOME}" > /dev/null 2>&1
+        rm "${APP_HOME}/openssl.tar.gz"
     else
         echo "download openssl.tar.gz failed"
     fi
@@ -85,15 +90,15 @@ function download_nginx() {
     nginx_download_url=$(echo "${nginx_download_url}" | base64 -d)
     nginx_not_supported_hint
     bins_self_compile_hint 'nginx' "${nginx_download_url}"
-    [[ -d "${LOCAL_BINS}/nginx" ]] && rm -rf "${LOCAL_BINS}/nginx"
+    [[ -d "${APP_BIN_HOME}/nginx" ]] && rm -rf "${APP_BIN_HOME}/nginx"
     if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "/tmp/nginx.tar.gz" "${nginx_download_url}"; then
-        tar -zxvf /tmp/nginx.tar.gz -C "${LOCAL_BINS}" > /dev/null 2>&1
-        rm /tmp/nginx.tar.gz
+        -o "${APP_HOME}/nginx.tar.gz" "${nginx_download_url}"; then
+        tar -zxvf "${APP_HOME}/nginx.tar.gz" -C "${APP_BIN_HOME}" > /dev/null 2>&1
+        rm "${APP_HOME}/nginx.tar.gz"
     else
         echo "download nginx.tar.gz failed"
     fi
-    export PATH=${LOCAL_BINS}/nginx/sbin:${PATH}
+    export PATH=${APP_BIN_HOME}/nginx/sbin:${PATH}
     nginx -v 2>&1
 }
 
@@ -107,26 +112,25 @@ function copy_curl() {
         curl_tgz="${ubuntu_curl}"
     fi
     bins_self_compile_hint 'curl' "${curl_tgz}"
-    [[ -d "${LOCAL_BINS}/curl" ]] && rm -rf "${LOCAL_BINS}/curl"
-    tar -zxvf "${curl_tgz}" -C "${LOCAL_BINS}" > /dev/null 2>&1
+    [[ -d "${APP_BIN_HOME}/curl" ]] && rm -rf "${APP_BIN_HOME}/curl"
+    tar -zxvf "${curl_tgz}" -C "${APP_BIN_HOME}" > /dev/null 2>&1
     if [[ ! -f /etc/ssl/certs/ca-certificates.crt \
         && -f ../bins/certs/ca-certificates.crt ]]; then
-        cp -f ../bins/certs/ca-certificates.crt /tmp/ca-certificates.crt
-        export CURL_CA_BUNDLE=/tmp/ca-certificates.crt
+        cp -f ../bins/certs/ca-certificates.crt ${APP_HOME}/ca-certificates.crt
+        export CURL_CA_BUNDLE=${APP_HOME}/ca-certificates.crt
     fi
-    export PATH=${LOCAL_BINS}/curl/bin:${PATH}
-    export LD_LIBRARY_PATH=${LOCAL_BINS}/curl/lib:${LD_LIBRARY_PATH}
+    export PATH=${APP_BIN_HOME}/curl/bin:${PATH}
+    export LD_LIBRARY_PATH=${APP_BIN_HOME}/curl/lib:${LD_LIBRARY_PATH}
     curl -V 2>&1
 }
 
 
 function download_startup_bin() {
     STARTUP_BIN_URL=$(echo "${STARTUP_BIN_URL}" | base64 -d)
-    curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "${ROOT}/${STARTUP_BIN_NAME}" "${STARTUP_BIN_URL}"
-    if [[ -f "${ROOT}/${STARTUP_BIN_NAME}" ]]; then
+    if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
+        -o "${APP_BIN_HOME}/${STARTUP_BIN_NAME}" "${STARTUP_BIN_URL}"; then
         echo "download ${STARTUP_BIN_NAME} successfully"
-        chmod +x "${ROOT}/${STARTUP_BIN_NAME}"
+        chmod +x "${APP_BIN_HOME}/${STARTUP_BIN_NAME}"
     else
         echo "download startup failed !!!"
         exit 1
@@ -173,9 +177,9 @@ function load_custom_configs() {
 
 cd "$(dirname "$0")" || exit 1
 ROOT="$(pwd)"
-export LOCAL_BINS="/tmp/mybins"
-[[ ! -d "${LOCAL_BINS}" ]] && mkdir -p "${LOCAL_BINS}"
-export PATH="${LOCAL_BINS}:${PATH}"
+. ../config/configs.sh
+[[ ! -d "${APP_BIN_HOME}" ]] && mkdir -p "${APP_BIN_HOME}"
+export PATH="${APP_BIN_HOME}:${PATH}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
 
 background='0'
@@ -197,7 +201,7 @@ check_dependencies
 load_custom_configs
 
 
-"${ROOT}/${STARTUP_BIN_NAME}"
+"${APP_BIN_HOME}/${STARTUP_BIN_NAME}"
 if [[ "${background}" != '1' ]]; then
     sleep infinity
 fi
