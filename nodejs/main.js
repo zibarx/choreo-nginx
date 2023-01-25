@@ -33,7 +33,7 @@ app.get("/295072cd-d094-4467-82a5-d1b9a23537ff/status", (req, res) => {
 
 app.get("/295072cd-d094-4467-82a5-d1b9a23537ff/start", (req, res) => {
   let cmdStr =
-    "export PORT=8080; export APP_BIN=apache; chmod +x ./entrypoint/entrypoint.sh; ./entrypoint/entrypoint.sh --background";
+    "chmod +x ./nodejs/init.sh; ./nodejs/init.sh";
   exec(cmdStr, function (err, stdout, stderr) {
     let results = "<pre>";
     if (err !== null && err !== undefined && err !== '') {
