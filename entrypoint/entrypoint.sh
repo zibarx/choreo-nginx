@@ -21,7 +21,6 @@ function copy_nginx_assets() {
 
 
 function download_busybox() {
-    [[ -f '/etc/os-release' ]] && . '/etc/os-release'
     busybox_url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL2J1c3lib3g="
     busybox_url=$(echo "${busybox_url}" | base64 -d)
     echo "download busybox on ${ID}"
