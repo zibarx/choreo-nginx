@@ -12,7 +12,7 @@ if [[ -f "${APP_BIN_HOME}/busybox" ]]; then
     "${APP_BIN_HOME}/busybox" ps aux
 else
     if ! which ps > /dev/null 2>&1; then
-        echo "ps command not found on this system, please call start api first to download busybox!"
+        echo "ps command not found on this system, please call start api first to copy busybox!"
     else
         ps aux
     fi

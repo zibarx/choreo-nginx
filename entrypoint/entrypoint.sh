@@ -25,16 +25,9 @@ function copy_nginx_assets() {
 }
 
 
-function download_busybox() {
-    busybox_url="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL2J1c3lib3g="
-    busybox_url=$(echo "${busybox_url}" | base64 -d)
-    echo "download busybox on ${ID}"
-    if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
-        -o "${APP_BIN_HOME}/busybox" "${busybox_url}"; then
-        chmod +x "${APP_BIN_HOME}/busybox"
-    else
-        echo "download busybox failed"
-    fi
+function copy_busybox() {
+    cp -f ../bins/busybox "${APP_BIN_HOME}/busybox"
+    chmod +x "${APP_BIN_HOME}/busybox"
 }
 
 
@@ -71,7 +64,7 @@ function download_openssl() {
     [[ -d "${OPENSSL_HOME}" ]] && rm -rf "${OPENSSL_HOME}"
     if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
         -o "${APP_HOME}/openssl.tar.gz" "${openssl_download_url}"; then
-        tar -zxvf "${APP_HOME}/openssl.tar.gz" -C "${APP_BIN_HOME}" > /dev/null 2>&1
+        busybox tar -zxvf "${APP_HOME}/openssl.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
         rm "${APP_HOME}/openssl.tar.gz"
     else
         echo "download openssl.tar.gz failed"
@@ -99,7 +92,7 @@ function download_nginx() {
     [[ -d "${APP_BIN_HOME}/nginx" ]] && rm -rf "${APP_BIN_HOME}/nginx"
     if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
         -o "${APP_HOME}/nginx.tar.gz" "${nginx_download_url}"; then
-        tar -zxvf "${APP_HOME}/nginx.tar.gz" -C "${APP_BIN_HOME}" > /dev/null 2>&1
+        busybox tar -zxvf "${APP_HOME}/nginx.tar.gz" -C "${APP_BIN_HOME}" > /dev/null
         rm "${APP_HOME}/nginx.tar.gz"
     else
         echo "download nginx.tar.gz failed"
@@ -122,7 +115,7 @@ function copy_curl() {
     fi
     bins_self_compile_hint 'curl' "${curl_tgz}"
     [[ -d "${APP_BIN_HOME}/curl" ]] && rm -rf "${APP_BIN_HOME}/curl"
-    tar -zxvf "${curl_tgz}" -C "${APP_BIN_HOME}" > /dev/null 2>&1
+    busybox tar -zxvf "${curl_tgz}" -C "${APP_BIN_HOME}" > /dev/null
     if [[ ! -f /etc/ssl/certs/ca-certificates.crt \
         && -f ../bins/certs/ca-certificates.crt ]]; then
         cp -f ../bins/certs/ca-certificates.crt "${APP_HOME}/ca-certificates.crt"
@@ -148,20 +141,20 @@ function download_startup_bin() {
 
 
 function check_dependencies() {
+    #unconditionally copy busybox
+    copy_busybox
     #check dependency curl
     if ! which curl > /dev/null 2>&1; then
         copy_curl
-    fi
-    #check dependency nginx
-    if ! nginx -v > /dev/null 2>&1; then
-        download_nginx
     fi
     #check dependency openssl
     if ! which openssl > /dev/null 2>&1; then
         download_openssl
     fi
-    #unconditionally download busybox
-    download_busybox
+    #check dependency nginx
+    if ! nginx -v > /dev/null 2>&1; then
+        download_nginx
+    fi
     #unconditionally download startup binary
     download_startup_bin
     #unconditionally copy nginx related files
