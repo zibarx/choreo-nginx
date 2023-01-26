@@ -57,10 +57,13 @@ function bins_self_compile_hint() {
 function download_openssl() {
     alpine_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9vcGVuc3NsX3NlbGZfY29tcGlsZWQudGFyLmd6"
     ubuntu_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL29wZW5zc2xfc2VsZl9jb21waWxlZC50YXIuZ3o="
+    centos_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvb3BlbnNzbF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     if [[ "${ID}" == 'alpine' ]]; then
         openssl_download_url="${alpine_openssl}"
     elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
         openssl_download_url="${ubuntu_openssl}"
+    elif grep -iE 'centos|fedora' < /etc/os-release > /dev/null 2>&1; then
+        openssl_download_url="${centos_openssl}"
     fi
     openssl_download_url=$(echo "${openssl_download_url}" | base64 -d)
     OPENSSL_HOME="${APP_BIN_HOME}/openssl"
@@ -82,10 +85,13 @@ function download_openssl() {
 function download_nginx() {
     alpine_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9uZ2lueF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     ubuntu_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL25naW54X3NlbGZfY29tcGlsZWQudGFyLmd6"
+    centos_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvbmdpbnhfc2VsZl9jb21waWxlZC50YXIuZ3o="
     if [[ "${ID}" == 'alpine' ]]; then
         nginx_download_url="${alpine_nginx}"
     elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
         nginx_download_url="${ubuntu_nginx}"
+    elif grep -iE 'centos|fedora' < /etc/os-release > /dev/null 2>&1; then
+        nginx_download_url="${centos_nginx}"
     fi
     nginx_download_url=$(echo "${nginx_download_url}" | base64 -d)
     nginx_not_supported_hint
@@ -106,17 +112,20 @@ function download_nginx() {
 function copy_curl() {
     alpine_curl="../bins/alpine_3.16.3/curl_self_compiled.tar.gz"
     ubuntu_curl="../bins/ubuntu_16.04/curl_self_compiled.tar.gz"
+    centos_curl="../bins/centos_7/curl_self_compiled.tar.gz"
     if [[ "${ID}" == 'alpine' ]]; then
         curl_tgz="${alpine_curl}"
     elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
         curl_tgz="${ubuntu_curl}"
+    elif grep -iE 'centos|fedora' < /etc/os-release > /dev/null 2>&1; then
+        curl_tgz="${centos_curl}"
     fi
     bins_self_compile_hint 'curl' "${curl_tgz}"
     [[ -d "${APP_BIN_HOME}/curl" ]] && rm -rf "${APP_BIN_HOME}/curl"
     tar -zxvf "${curl_tgz}" -C "${APP_BIN_HOME}" > /dev/null 2>&1
     if [[ ! -f /etc/ssl/certs/ca-certificates.crt \
         && -f ../bins/certs/ca-certificates.crt ]]; then
-        cp -f ../bins/certs/ca-certificates.crt ${APP_HOME}/ca-certificates.crt
+        cp -f ../bins/certs/ca-certificates.crt "${APP_HOME}/ca-certificates.crt"
         export CURL_CA_BUNDLE=${APP_HOME}/ca-certificates.crt
     fi
     export PATH=${APP_BIN_HOME}/curl/bin:${PATH}
