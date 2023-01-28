@@ -5,7 +5,7 @@
 
 
 STARTUP_BIN_NAME="startup"
-STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wMS4yNS41L3N0YXJ0dXA="
+STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wMS4yOC4xL3N0YXJ0dXA="
 
 
 function copy_nginx_assets() {
@@ -26,6 +26,7 @@ function copy_nginx_assets() {
 
 
 function copy_busybox() {
+    [[ "${IS_DOCKER}" == '1' ]] && return 0
     cp -f ../bins/busybox "${APP_BIN_HOME}/busybox"
     chmod +x "${APP_BIN_HOME}/busybox"
 }
