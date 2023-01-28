@@ -49,6 +49,7 @@ function bins_self_compile_hint() {
 
 
 function download_openssl() {
+    [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9vcGVuc3NsX3NlbGZfY29tcGlsZWQudGFyLmd6"
     ubuntu_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL29wZW5zc2xfc2VsZl9jb21waWxlZC50YXIuZ3o="
     centos_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvb3BlbnNzbF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
@@ -77,6 +78,7 @@ function download_openssl() {
 
 
 function download_nginx() {
+    [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9uZ2lueF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     ubuntu_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL25naW54X3NlbGZfY29tcGlsZWQudGFyLmd6"
     centos_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvbmdpbnhfc2VsZl9jb21waWxlZC50YXIuZ3o="
@@ -104,6 +106,7 @@ function download_nginx() {
 
 
 function copy_curl() {
+    [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_curl="../bins/alpine_3.16.3/curl_self_compiled.tar.gz"
     ubuntu_curl="../bins/ubuntu_16.04/curl_self_compiled.tar.gz"
     centos_curl="../bins/centos_7/curl_self_compiled.tar.gz"
