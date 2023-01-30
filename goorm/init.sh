@@ -25,7 +25,7 @@ set_watchdog(){
     if [[ -z "${cron_pid}" ]]; then
         service cron start
     fi
-    cron_file="/var/spool/cron/crontabs/root"
+    cron_file="/var/spool/cron/crontabs/$(whoami)"
     if [[ ! -f "$cron_file" ]]; then
         mkdir -p /var/spool/cron/crontabs
         touch "${cron_file}"
