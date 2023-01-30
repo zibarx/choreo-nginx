@@ -50,7 +50,7 @@ watchdog_status() {
     if [[ "${numOfP}" != '1' ]]; then
         error='1'
     fi
-    numOfNginx=$(busybox ps aux | grep -v grep | grep -icE "nginx")
+    numOfNginx=$(busybox ps aux | grep -v grep | grep -icE "nginx -c ${APP_HOME}/nginx/nginx.conf")
     if [[ "${numOfNginx}" == '0' ]]; then
         error='1'
     fi
