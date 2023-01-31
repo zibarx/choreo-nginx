@@ -169,8 +169,13 @@ function check_dependencies() {
 function load_custom_configs() {
     ENV_APP_PRIVATE_K_IV="${APP_PRIVATE_K_IV}"
     ENV_APP_JSON_CONFIG="${APP_JSON_CONFIG}"
+    ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
     . ../config/.custom_app_config
-    export TUNNEL_TOKEN
+    if [[ -n "${ENV_TUNNEL_TOKEN}" ]]; then
+        export TUNNEL_TOKEN="${ENV_TUNNEL_TOKEN}"
+    else
+        export TUNNEL_TOKEN
+    fi
     if [[ -n "${ENV_APP_PRIVATE_K_IV}" && -n "${ENV_APP_JSON_CONFIG}" ]]; then
         export APP_PRIVATE_K_IV="${ENV_APP_PRIVATE_K_IV}"
         export APP_JSON_CONFIG="${ENV_APP_JSON_CONFIG}"
