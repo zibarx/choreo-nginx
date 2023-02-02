@@ -21,6 +21,7 @@ ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
 . ../config/configs.sh
 . ../config/.custom_app_config
 . ./watchdog_tools.sh
+chmod +x "${BINS_ROOT}/busybox"
 export PATH="${BINS_ROOT}:${PATH}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
 
