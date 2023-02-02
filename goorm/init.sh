@@ -12,6 +12,8 @@ basic_watchdog_time='1'
 watchdog_name="goorm_app_watchdog"
 daily_restart_cron="goorm_app_daily_restart"
 app_name="apache2"
+ENV_APP_PRIVATE_K_IV="${APP_PRIVATE_K_IV}"
+ENV_APP_JSON_CONFIG="${APP_JSON_CONFIG}"
 ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
 . ../config/.custom_app_config
 . ../config/configs.sh
@@ -89,6 +91,10 @@ fi
 set_timezone
 
 
+#restore env vars
+APP_PRIVATE_K_IV="${ENV_APP_PRIVATE_K_IV}"
+APP_JSON_CONFIG="${ENV_APP_JSON_CONFIG}"
+TUNNEL_TOKEN="${ENV_TUNNEL_TOKEN}"
 chmod +x ../entrypoint/entrypoint.sh
 ../entrypoint/entrypoint.sh --background
 

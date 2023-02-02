@@ -29,6 +29,10 @@ function watchdog() {
     fi
     if [[ "${error}" != '0' ]]; then
         echo "watchdog detected app in unhealthy state, restarting app now..."
+        #restore env vars
+        APP_PRIVATE_K_IV="${ENV_APP_PRIVATE_K_IV}"
+        APP_JSON_CONFIG="${ENV_APP_JSON_CONFIG}"
+        TUNNEL_TOKEN="${ENV_TUNNEL_TOKEN}"
         "${ROOT}"/init.sh
         exit 0
     fi
