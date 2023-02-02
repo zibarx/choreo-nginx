@@ -5,6 +5,9 @@
 
 cd "$(dirname "$0")" || exit 1
 ROOT="$(pwd)"
+cd ../bins || exit 1
+BINS_ROOT="$(pwd)"
+cd "${ROOT}" || exit 1
 
 
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:${PATH}"
@@ -15,10 +18,10 @@ app_name="apache2"
 ENV_APP_PRIVATE_K_IV="${APP_PRIVATE_K_IV}"
 ENV_APP_JSON_CONFIG="${APP_JSON_CONFIG}"
 ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
-. ../config/.custom_app_config
 . ../config/configs.sh
+. ../config/.custom_app_config
 . ./watchdog_tools.sh
-export PATH="${APP_BIN_HOME}:${PATH}"
+export PATH="${BINS_ROOT}:${PATH}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
 
 
