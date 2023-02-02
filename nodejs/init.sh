@@ -15,11 +15,11 @@ ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
 . ../goorm/watchdog_tools.sh
 
 
-app_name="${APP_BIN}"
-chmod +x "${BINS_ROOT}/busybox"
-export PATH="${BINS_ROOT}:${PATH}"
 export PORT=8080
 export APP_BIN=apache
+chmod +x "${BINS_ROOT}/busybox"
+export PATH="${BINS_ROOT}:${PATH}"
+app_name="${APP_BIN}"
 
 
 WATCHDOG='0'
