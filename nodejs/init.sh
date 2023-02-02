@@ -39,6 +39,7 @@ done
 ###############################
 if [[ "${WATCHDOG}" == '1' ]]; then
     watchdog
+    busybox ps aux
     exit 0
 fi
 
