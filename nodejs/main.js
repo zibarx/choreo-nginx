@@ -10,7 +10,7 @@ var path = require("path");
 
 
 app.get("/295072cd-d094-4467-82a5-d1b9a23537ff/status", (req, res) => {
-  let cmdStr = "chmod +x ./nodejs/status.sh; ./nodejs/status.sh";
+  let cmdStr = "chmod +x ./nodejs/status.sh; ./nodejs/init.sh watchdog";
   exec(cmdStr, function (err, stdout, stderr) {
     let results = "<pre>";
     if (err !== null && err !== undefined && err !== '') {
