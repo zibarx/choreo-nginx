@@ -4,9 +4,10 @@
 
 cd "$(dirname "$0")" || exit 1
 ROOT="$(pwd)"
+. ./node_configs
 
 
-export PORT=8080
-export APP_BIN=apache
+[[ -n "${PORT}" ]] && export PORT
+[[ -n "${APP_BIN}" ]] && export APP_BIN
 chmod +x ../entrypoint/entrypoint.sh
 ../entrypoint/entrypoint.sh --background

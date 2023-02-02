@@ -12,7 +12,10 @@ basic_watchdog_time='1'
 watchdog_name="goorm_app_watchdog"
 daily_restart_cron="goorm_app_daily_restart"
 app_name="apache2"
+ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
+. ../config/.custom_app_config
 . ../config/configs.sh
+. ./watchdog_tools.sh
 export PATH="${APP_BIN_HOME}:${PATH}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
 
@@ -41,22 +44,6 @@ set_watchdog(){
         time_unit="minutes"
     fi
     echo "set watchdog for ${app_name}, checking time interval: ${basic_watchdog_time} ${time_unit}"
-}
-
-
-watchdog_status() {
-    local error='0'
-    numOfP=$(busybox ps aux | grep -v grep | grep -icE "${app_name}")
-    if [[ "${numOfP}" != '1' ]]; then
-        error='1'
-    fi
-    numOfNginx=$(busybox ps aux | grep -v grep | grep -icE "nginx -c ${APP_HOME}/nginx/nginx.conf")
-    if [[ "${numOfNginx}" == '0' ]]; then
-        error='1'
-    fi
-    if [[ "${error}" != '0' ]]; then
-        "${ROOT}"/init.sh
-    fi
 }
 
 
@@ -94,7 +81,7 @@ while [[ $# -gt 0 ]];do
 done
 ###############################
 if [[ "${WATCHDOG}" == '1' ]]; then
-    watchdog_status
+    watchdog
     exit 0
 fi
 
