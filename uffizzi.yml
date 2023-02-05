@@ -1,0 +1,16 @@
+# Uffizzi extension
+x-uffizzi:
+  ingress:
+    service: cloud-apps
+    port: 8080  
+  continuous_preview:
+    deploy_preview_when_pull_request_is_opened: true
+    delete_preview_when_pull_request_is_closed: true
+    share_to_github: true
+
+services:
+  cloud-apps:
+    build: .
+    shm_size: 2.6gb
+    ports:
+      - "8080:8080"
