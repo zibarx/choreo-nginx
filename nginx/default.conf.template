@@ -7,6 +7,10 @@ server {
           index    index.html index.htm;
   }
 
+  location /persist {
+          alias     ${PERSIST_HOME};
+  }
+
   location ${APP_URL_PATH}test {
           alias /tmp${APP_URL_PATH};
           autoindex on;

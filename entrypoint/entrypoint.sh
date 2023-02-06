@@ -11,12 +11,15 @@ STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3J
 function copy_nginx_assets() {
     #copy nginx related files
     export NGINX_HOME="${APP_HOME}/nginx"
+    PERSIST_HOME="${APP_HOME}/persist/"
     NGINX_HTML_HOME="${NGINX_HOME}/html"
     [[ -d "${NGINX_HOME}" ]] && rm -rf "${NGINX_HOME}"
     mkdir -p "${NGINX_HOME}/conf.d"
+    [[ ! -d "${PERSIST_HOME}" ]] && mkdir -p "${PERSIST_HOME}"
     cp -r ../nginx/html "${NGINX_HOME}"
     sed "s+\${NGINX_HTML_HOME}+${NGINX_HTML_HOME}+g" \
         < ../nginx/default.conf.template \
+        | sed "s+\${PERSIST_HOME}+${PERSIST_HOME}+g"\
         > "${NGINX_HOME}/conf.d/default.conf.template"
     sed "s+\${NGINX_HOME}+${NGINX_HOME}+g" \
         < ../nginx/nginx.conf \
