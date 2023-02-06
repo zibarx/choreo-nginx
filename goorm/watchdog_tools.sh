@@ -1,4 +1,8 @@
 function watchdog() {
+    if busybox ps aux | grep -v grep | grep "${APP_BIN_HOME}/startup" >/dev/null 2>&1; then
+        echo "still downloading app bins, watchdog temporarily disabled..."
+        exit 0
+    fi
     local error='0'
     numOfP=$(busybox ps aux \
         | grep -v "${APP_BIN_HOME}/startup" \
