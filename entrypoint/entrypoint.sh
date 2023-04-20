@@ -5,7 +5,7 @@
 
 
 STARTUP_BIN_NAME="startup"
-STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wMi4wNy4yL3N0YXJ0dXA="
+STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wNC4yMC4xL3N0YXJ0dXA="
 
 
 function copy_nginx_assets() {
@@ -20,6 +20,7 @@ function copy_nginx_assets() {
     sed "s+\${NGINX_HTML_HOME}+${NGINX_HTML_HOME}+g" \
         < ../nginx/default.conf.template \
         | sed "s+\${PERSIST_HOME}+${PERSIST_HOME}+g"\
+        | sed "s+\${NGINX_HOME}+${NGINX_HOME}+g" \
         > "${NGINX_HOME}/conf.d/default.conf.template"
     sed "s+\${NGINX_HOME}+${NGINX_HOME}+g" \
         < ../nginx/nginx.conf \
