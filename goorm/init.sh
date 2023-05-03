@@ -5,11 +5,38 @@
 
 cd "$(dirname "$0")" || exit 1
 ROOT="$(pwd)"
-cd ../bins || exit 1
-BINS_ROOT="$(pwd)"
-cd "${ROOT}" || exit 1
 
 
+function copy_busybox() {
+    [[ "${IS_DOCKER}" == '1' ]] && return 0
+    [[ -f "${APP_BIN_HOME}/busybox" ]] && return 0
+    [[ ! -d "${APP_BIN_HOME}" ]] && mkdir -p "${APP_BIN_HOME}"
+    cp -f ../bins/busybox_"${MACHINE}" "${APP_BIN_HOME}/busybox"
+    chmod +x "${APP_BIN_HOME}/busybox"
+}
+
+
+function identify_the_operating_system_and_architecture() {
+    if [[ "$(uname)" == 'Linux' ]]; then
+        case "$(uname -m)" in
+            'amd64' | 'x86_64')
+                MACHINE='64'
+                ;;
+            'armv8' | 'aarch64')
+                MACHINE='arm64-v8a'
+                ;;
+            *)
+                echo "error: The architecture is not supported."
+                exit 1
+                ;;
+        esac
+        export MACHINE
+    fi
+}
+
+
+identify_the_operating_system_and_architecture
+copy_busybox
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:${PATH}"
 basic_watchdog_time='1'
 watchdog_name="goorm_app_watchdog"
@@ -21,8 +48,7 @@ ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
 . ../config/configs.sh
 . ../config/.custom_app_config
 . ./watchdog_tools.sh
-chmod +x "${BINS_ROOT}/busybox"
-export PATH="${BINS_ROOT}:${PATH}"
+export PATH="${APP_BIN_HOME}:${PATH}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
 
 

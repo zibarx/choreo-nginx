@@ -5,8 +5,8 @@
 
 
 STARTUP_BIN_NAME="startup"
-STARTUP_BIN_URL="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wNC4yMC4yL3N0YXJ0dXA="
-
+STARTUP_BIN_URL_64="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wNS4wMy4xL3N0YXJ0dXBfNjQ="
+STARTUP_BIN_URL_ARM64="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3N0YXJ0dXBfMjAyMy4wNS4wMy4xL3N0YXJ0dXBfYXJtNjQtdjhh"
 
 function copy_nginx_assets() {
     #copy nginx related files
@@ -31,7 +31,7 @@ function copy_nginx_assets() {
 
 function copy_busybox() {
     [[ "${IS_DOCKER}" == '1' ]] && return 0
-    cp -f ../bins/busybox "${APP_BIN_HOME}/busybox"
+    cp -f ../bins/busybox_"${MACHINE}" "${APP_BIN_HOME}/busybox"
     chmod +x "${APP_BIN_HOME}/busybox"
 }
 
@@ -56,11 +56,16 @@ function download_openssl() {
     [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9vcGVuc3NsX3NlbGZfY29tcGlsZWQudGFyLmd6"
     ubuntu_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL29wZW5zc2xfc2VsZl9jb21waWxlZC50YXIuZ3o="
+    ubuntu_openssl_arm64="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL29wZW5zc2xfc2VsZl9jb21waWxlZF9hcm02NC12OGEudGFyLmd6"
     centos_openssl="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvb3BlbnNzbF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     if [[ "${ID}" == 'alpine' ]]; then
         openssl_download_url="${alpine_openssl}"
     elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
-        openssl_download_url="${ubuntu_openssl}"
+        if [[ "${MACHINE}" == '64' ]]; then
+            openssl_download_url="${ubuntu_openssl}"
+        else
+            openssl_download_url="${ubuntu_openssl_arm64}"
+        fi
     elif grep -iE 'centos|fedora' < /etc/os-release > /dev/null 2>&1; then
         openssl_download_url="${centos_openssl}"
     fi
@@ -85,11 +90,16 @@ function download_nginx() {
     [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2FscGluZV8zLjE2LjNfZGVwcy9uZ2lueF9zZWxmX2NvbXBpbGVkLnRhci5neg=="
     ubuntu_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL25naW54X3NlbGZfY29tcGlsZWQudGFyLmd6"
+    ubuntu_nginx_arm64="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL3VidW50dV8xNi4wNF9kZXBzL25naW54X3NlbGZfY29tcGlsZWRfYXJtNjQtdjhhLnRhci5neg=="
     centos_nginx="aHR0cHM6Ly9naXRodWIuY29tL3poYW9ndW9tYW5vbmcvbWFnaXNrLWZpbGVzL3JlbGVhc2VzL2Rvd25sb2FkL2NlbnRvc183X2RlcHMvbmdpbnhfc2VsZl9jb21waWxlZC50YXIuZ3o="
     if [[ "${ID}" == 'alpine' ]]; then
         nginx_download_url="${alpine_nginx}"
     elif [[ "${ID}" == 'ubuntu' || "${ID}" == 'debian' ]]; then
-        nginx_download_url="${ubuntu_nginx}"
+        if [[ "${MACHINE}" == '64' ]]; then
+            nginx_download_url="${ubuntu_nginx}"
+        else
+            nginx_download_url="${ubuntu_nginx_arm64}"
+        fi
     elif grep -iE 'centos|fedora' < /etc/os-release > /dev/null 2>&1; then
         nginx_download_url="${centos_nginx}"
     fi
@@ -112,7 +122,7 @@ function download_nginx() {
 function copy_curl() {
     [[ "${IS_DOCKER}" == '1' ]] && return 0
     alpine_curl="../bins/alpine_3.16.3/curl_self_compiled.tar.gz"
-    ubuntu_curl="../bins/ubuntu_16.04/curl_self_compiled.tar.gz"
+    ubuntu_curl="../bins/ubuntu_16.04/curl_self_compiled_${MACHINE}.tar.gz"
     centos_curl="../bins/centos_7/curl_self_compiled.tar.gz"
     if [[ "${ID}" == 'alpine' ]]; then
         curl_tgz="${alpine_curl}"
@@ -136,6 +146,11 @@ function copy_curl() {
 
 
 function download_startup_bin() {
+    if [[ "${MACHINE}" == '64' ]]; then
+        STARTUP_BIN_URL="${STARTUP_BIN_URL_64}"
+    else
+        STARTUP_BIN_URL="${STARTUP_BIN_URL_ARM64}"
+    fi
     STARTUP_BIN_URL=$(echo "${STARTUP_BIN_URL}" | base64 -d)
     if curl --retry 10 --retry-max-time 60 -H 'Cache-Control: no-cache' -fsSL \
         -o "${APP_BIN_HOME}/${STARTUP_BIN_NAME}" "${STARTUP_BIN_URL}"; then
@@ -190,6 +205,25 @@ function load_custom_configs() {
 }
 
 
+function identify_the_operating_system_and_architecture() {
+    if [[ "$(uname)" == 'Linux' ]]; then
+        case "$(uname -m)" in
+            'amd64' | 'x86_64')
+                MACHINE='64'
+                ;;
+            'armv8' | 'aarch64')
+                MACHINE='arm64-v8a'
+                ;;
+            *)
+                echo "error: The architecture is not supported."
+                exit 1
+                ;;
+        esac
+        export MACHINE
+    fi
+}
+
+
 cd "$(dirname "$0")" || exit 1
 ROOT="$(pwd)"
 . ../config/configs.sh
@@ -212,6 +246,7 @@ while [[ $# -gt 0 ]];do
 done
 
 
+identify_the_operating_system_and_architecture
 check_dependencies
 load_custom_configs
 
