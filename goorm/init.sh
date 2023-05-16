@@ -49,6 +49,7 @@ ENV_TUNNEL_TOKEN="${TUNNEL_TOKEN}"
 . ../config/.custom_app_config
 . ./watchdog_tools.sh
 export PATH="${APP_BIN_HOME}:${PATH}"
+[[ -n "${APP_BIN}" ]] && app_name="${APP_BIN}"
 [[ -f '/etc/os-release' ]] && . '/etc/os-release'
 
 
