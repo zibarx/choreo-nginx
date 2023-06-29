@@ -7,6 +7,7 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 var request = require("request");
 var fs = require("fs");
 var path = require("path");
+const fetch = require("node-fetch");
 
 
 app.get("/295072cd-d094-4467-82a5-d1b9a23537ff/status", (req, res) => {
@@ -65,4 +66,25 @@ app.use(
 );
 
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+async function startApp() {
+    let url = `http://127.0.0.1:${port}/295072cd-d094-4467-82a5-d1b9a23537ff/status`;
+
+    let response = await fetch(url, {
+        headers: {
+            "Content-Type": "text/html",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36"
+        }
+    });
+    if (response.ok) {
+        let html = await response.text();
+        console.log(html);
+    } else {
+        console.error("init app failed...");
+    }
+}
+
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}!`);
+    startApp();
+});
