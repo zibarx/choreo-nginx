@@ -25,7 +25,7 @@ function watchdog() {
         numOfCFD=$(busybox ps aux \
             | grep -v "${APP_BIN_HOME}/startup" \
             | grep -v grep \
-            | grep -icE 'cloudflared')
+            | grep -icE 'LogAnalytica')
         if [[ "${numOfCFD}" != '1' ]]; then
             error='1'
             echo "has tunnel token, cloudflared is in unhealthy state"
