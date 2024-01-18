@@ -18,7 +18,7 @@ COPY config /opt/config
 #https://devcenter.heroku.com/articles/container-registry-and-runtime
 RUN adduser -D app; \
     chmod -R a+rwx /opt/entrypoint
-USER app
+USER 10023
 
 EXPOSE 8080
 
