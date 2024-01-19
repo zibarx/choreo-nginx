@@ -19,6 +19,8 @@ COPY config /opt/config
 RUN adduser -D app; \
     chmod -R a+rwx /opt/entrypoint
 
+USER 10014
+
 EXPOSE 8080
 
 CMD ["/opt/entrypoint/entrypoint.sh"]
